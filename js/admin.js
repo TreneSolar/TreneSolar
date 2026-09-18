@@ -1,13 +1,13 @@
-import { supabase, isConfigured } from "./supabase-client.js?v=12";
+import { supabase, isConfigured } from "./supabase-client.js?v=14";
 
 const loginView = document.getElementById("loginView");
 const dashboardView = document.getElementById("dashboardView");
 
-// ---------- Sesión ----------
+// ---------- Sesi\u00f3n ----------
 async function checkSession() {
   if (!isConfigured) {
     const msg = document.getElementById("loginMsg");
-    msg.textContent = "El panel todavía no está conectado a la base de datos.";
+    msg.textContent = "El panel todav\u00eda no est\u00e1 conectado a la base de datos.";
     msg.classList.add("err");
     document.getElementById("loginBtn").disabled = true;
     return;
@@ -37,7 +37,7 @@ document.getElementById("loginBtn").addEventListener("click", async () => {
   const password = document.getElementById("loginPassword").value;
   const { error } = await supabase.auth.signInWithPassword({ email, password });
   if (error) {
-    msg.textContent = "Correo o contraseña incorrectos.";
+    msg.textContent = "Correo o contrase\u00f1a incorrectos.";
     msg.classList.add("err");
     return;
   }
@@ -48,7 +48,7 @@ document.getElementById("logoutBtn").addEventListener("click", async () => {
   showLogin();
 });
 
-// ---------- Navegación entre pestañas ----------
+// ---------- Navegaci\u00f3n entre pesta\u00f1as ----------
 document.querySelectorAll(".admin-nav [data-tab]").forEach((link) => {
   link.addEventListener("click", () => {
     document.querySelectorAll(".admin-nav [data-tab]").forEach((l) => l.classList.remove("active"));
@@ -58,7 +58,7 @@ document.querySelectorAll(".admin-nav [data-tab]").forEach((link) => {
   });
 });
 
-const SERVICE_NAMES = { solar: "Energía Solar", electricidad: "Electricidad", automatica: "Automática" };
+const SERVICE_NAMES = { solar: "Energ\u00eda Solar", electricidad: "Electricidad", automatica: "Autom\u00e1tica" };
 const STATUS_LABELS = { pendiente: "Pendiente", confirmada: "Confirmada", completada: "Completada", cancelada: "Cancelada" };
 
 function badge(status) {
@@ -75,18 +75,22 @@ async function loadAll() {
   await Promise.all([loadStats(), loadAppointments(), loadClients(), loadBlocks(), loadReviews(), loadConfig()]);
 }
 
-// ---------- Configuración ----------
+// ---------- Configuraci\u00f3n ----------
 async function loadConfig() {
   const { data, error } = await supabase.from("admin_settings").select("*").eq("id", 1).single();
   if (error) {
-    console.error("Error cargando configuración:", error);
+    console.error("Error cargando configuraci\u00f3n:", error);
     return;
   }
   document.getElementById("cfgPhone").value = data?.whatsapp_admin_phone || "";
   document.getElementById("cfgApikey").value = data?.callmebot_apikey || "";
+  document.getElementById("cfgPhone2").value = data?.whatsapp_admin2_phone || "";
+  document.getElementById("cfgApikey2").value = data?.callmebot2_apikey || "";
   document.getElementById("cfgTelegramToken").value = data?.telegram_bot_token || "";
   document.getElementById("cfgTelegramChatId").value = data?.telegram_chat_id || "";
+  document.getElementById("cfgTelegramChatId2").value = data?.telegram_chat_id_2 || "";
   document.getElementById("cfgEmail").value = data?.owner_email || "";
+  document.getElementById("cfgEmail2").value = data?.owner_email_2 || "";
   document.getElementById("cfgResendKey").value = data?.resend_api_key || "";
 }
 document.getElementById("saveConfigBtn").addEventListener("click", async () => {
@@ -98,6 +102,8 @@ document.getElementById("saveConfigBtn").addEventListener("click", async () => {
     id: 1,
     whatsapp_admin_phone: document.getElementById("cfgPhone").value.trim(),
     callmebot_apikey: document.getElementById("cfgApikey").value.trim(),
+    whatsapp_admin2_phone: document.getElementById("cfgPhone2").value.trim(),
+    callmebot2_apikey: document.getElementById("cfgApikey2").value.trim(),
   });
 
   if (error) {
@@ -118,6 +124,7 @@ document.getElementById("saveTelegramConfigBtn").addEventListener("click", async
     id: 1,
     telegram_bot_token: document.getElementById("cfgTelegramToken").value.trim(),
     telegram_chat_id: document.getElementById("cfgTelegramChatId").value.trim(),
+    telegram_chat_id_2: document.getElementById("cfgTelegramChatId2").value.trim(),
   });
 
   if (error) {
@@ -134,9 +141,10 @@ document.getElementById("saveEmailConfigBtn").addEventListener("click", async ()
   msg.textContent = "";
   msg.className = "form-msg";
   const owner_email = document.getElementById("cfgEmail").value.trim();
+  const owner_email_2 = document.getElementById("cfgEmail2").value.trim();
   const resend_api_key = document.getElementById("cfgResendKey").value.trim();
 
-  const { error } = await supabase.from("admin_settings").upsert({ id: 1, owner_email, resend_api_key });
+  const { error } = await supabase.from("admin_settings").upsert({ id: 1, owner_email, owner_email_2, resend_api_key });
 
   if (error) {
     console.error(error);
@@ -148,16 +156,16 @@ document.getElementById("saveEmailConfigBtn").addEventListener("click", async ()
   msg.classList.add("ok");
 });
 
-// ---------- Estadísticas ----------
+// ---------- Estad\u00edsticas ----------
 async function loadStats() {
   const { data, error } = await supabase.from("stats_summary").select("*").single();
   if (error) {
-    console.error("Error cargando estadísticas:", error);
+    console.error("Error cargando estad\u00edsticas:", error);
     return;
   }
   document.getElementById("statCompletados").textContent = data.trabajos_completados ?? 0;
   document.getElementById("statActivas").textContent = data.citas_activas ?? 0;
-  document.getElementById("statCalificacion").textContent = data.calificacion_promedio ?? "—";
+  document.getElementById("statCalificacion").textContent = data.calificacion_promedio ?? "\u2014";
   document.getElementById("statReferidos").textContent = data.clientes_por_referido ?? 0;
 }
 
@@ -180,18 +188,18 @@ async function loadAppointments() {
   data.forEach((a) => bodyAll.appendChild(renderAppointmentRow(a, true)));
   if (data.length === 0) bodyAll.innerHTML = '<tr><td colspan="7" class="empty-state">Sin citas registradas.</td></tr>';
 
-  // Próximas (resumen) — pendientes/confirmadas más cercanas
+  // Pr\u00f3ximas (resumen) \u2014 pendientes/confirmadas m\u00e1s cercanas
   const proximas = data.filter((a) => a.status === "pendiente" || a.status === "confirmada").slice(0, 6);
   const bodyProx = document.querySelector("#tablaProximas tbody");
   bodyProx.innerHTML = "";
   proximas.forEach((a) => bodyProx.appendChild(renderAppointmentRow(a, false)));
-  if (proximas.length === 0) bodyProx.innerHTML = '<tr><td colspan="5" class="empty-state">No hay citas próximas.</td></tr>';
+  if (proximas.length === 0) bodyProx.innerHTML = '<tr><td colspan="5" class="empty-state">No hay citas pr\u00f3ximas.</td></tr>';
 }
 
 function renderAppointmentRow(a, withActions) {
   const tr = document.createElement("tr");
-  const cliente = a.clients ? esc(a.clients.full_name) : "—";
-  const telefono = a.clients ? esc(a.clients.phone) : "—";
+  const cliente = a.clients ? esc(a.clients.full_name) : "\u2014";
+  const telefono = a.clients ? esc(a.clients.phone) : "\u2014";
 
   if (withActions) {
     tr.innerHTML = `
@@ -249,7 +257,7 @@ function openWhatsappConfirmation(a) {
   const message =
     `Hola ${a.clients.full_name}, te confirmamos tu cita de ${serviceName} ` +
     `el ${a.scheduled_date} a las ${a.scheduled_time.slice(0, 5)}. ` +
-    `¡Gracias por confiar en TreneSolar!`;
+    `\u00a1Gracias por confiar en TreneSolar!`;
   window.open(`https://wa.me/${phoneDigits}?text=${encodeURIComponent(message)}`, "_blank");
 }
 
@@ -289,7 +297,7 @@ async function loadBlocks() {
     const tr = document.createElement("tr");
     tr.innerHTML = `
       <td>${b.blocked_date}</td>
-      <td>${b.blocked_time ? b.blocked_time.slice(0,5) : "Todo el día"}</td>
+      <td>${b.blocked_time ? b.blocked_time.slice(0,5) : "Todo el d\u00eda"}</td>
       <td>${esc(b.reason)}</td>
       <td class="row-actions"><button data-id="${b.id}">Eliminar</button></td>
     `;
@@ -327,14 +335,14 @@ async function deleteBlock(id) {
   loadBlocks();
 }
 
-// ---------- Reseñas ----------
+// ---------- Rese\u00f1as ----------
 async function loadReviews() {
   const { data, error } = await supabase
     .from("reviews")
     .select("id, client_name, rating, comment, approved")
     .order("created_at", { ascending: false });
   if (error) {
-    console.error("Error cargando reseñas:", error);
+    console.error("Error cargando rese\u00f1as:", error);
     return;
   }
   const pendientes = data.filter((r) => !r.approved);
@@ -346,7 +354,7 @@ async function loadReviews() {
     const tr = document.createElement("tr");
     tr.innerHTML = `
       <td>${esc(r.client_name)}</td>
-      <td>${"★".repeat(r.rating)}</td>
+      <td>${"\u2605".repeat(r.rating)}</td>
       <td>${esc(r.comment)}</td>
       <td class="row-actions"></td>
     `;
@@ -360,7 +368,7 @@ async function loadReviews() {
     actions.append(approveBtn, deleteBtn);
     bodyP.appendChild(tr);
   });
-  if (pendientes.length === 0) bodyP.innerHTML = '<tr><td colspan="4" class="empty-state">No hay reseñas pendientes.</td></tr>';
+  if (pendientes.length === 0) bodyP.innerHTML = '<tr><td colspan="4" class="empty-state">No hay rese\u00f1as pendientes.</td></tr>';
 
   const bodyA = document.querySelector("#tablaResenasAprobadas tbody");
   bodyA.innerHTML = "";
@@ -368,14 +376,14 @@ async function loadReviews() {
     const tr = document.createElement("tr");
     tr.innerHTML = `
       <td>${esc(r.client_name)}</td>
-      <td>${"★".repeat(r.rating)}</td>
+      <td>${"\u2605".repeat(r.rating)}</td>
       <td>${esc(r.comment)}</td>
       <td class="row-actions"><button data-id="${r.id}">Ocultar</button></td>
     `;
     tr.querySelector("button").onclick = () => setReviewApproval(r.id, false);
     bodyA.appendChild(tr);
   });
-  if (aprobadas.length === 0) bodyA.innerHTML = '<tr><td colspan="4" class="empty-state">Aún no hay reseñas publicadas.</td></tr>';
+  if (aprobadas.length === 0) bodyA.innerHTML = '<tr><td colspan="4" class="empty-state">A\u00fan no hay rese\u00f1as publicadas.</td></tr>';
 }
 async function setReviewApproval(id, approved) {
   const { error } = await supabase.from("reviews").update({ approved }).eq("id", id);
