@@ -1,4 +1,4 @@
-import { supabase, isConfigured } from "./supabase-client.js?v=12";
+import { supabase, isConfigured } from "./supabase-client.js?v=15";
 import QRCode from "https://esm.sh/qrcode@1.5.3";
 
 // ---------- Config de horarios ----------
@@ -72,7 +72,7 @@ function renderDayGrid() {
   if (startD.getMonth() === endD.getMonth()) {
     monthLabel.textContent = `${monthNames[startD.getMonth()]} ${startD.getFullYear()}`;
   } else {
-    monthLabel.textContent = `${monthNames[startD.getMonth()]} â ${monthNames[endD.getMonth()]} ${endD.getFullYear()}`;
+    monthLabel.textContent = `${monthNames[startD.getMonth()]} \u2013 ${monthNames[endD.getMonth()]} ${endD.getFullYear()}`;
   }
 
   for (let i = 0; i < DAYS_AHEAD; i++) {
@@ -102,7 +102,7 @@ function renderDayGrid() {
   }
 
   if (!selectedDate) {
-    // selecciona automÃ¡ticamente el primer dÃ­a disponible
+    // selecciona autom\u00e1ticamente el primer d\u00eda disponible
     for (let i = 0; i < DAYS_AHEAD; i++) {
       const d = new Date(today);
       d.setDate(d.getDate() + i);
@@ -144,7 +144,7 @@ function formatTime(t) {
   return `${h12}:${m.toString().padStart(2, "0")} ${period}`;
 }
 
-// ---------- SelecciÃ³n de servicio ----------
+// ---------- Selecci\u00f3n de servicio ----------
 document.getElementById("servicePills").addEventListener("click", (e) => {
   const btn = e.target.closest("[data-service]");
   if (!btn) return;
@@ -167,22 +167,22 @@ document.getElementById("confirmBtn").addEventListener("click", async () => {
   const notes = document.getElementById("clientNotes").value.trim();
 
   if (!full_name || !phone || !address) {
-    msg.textContent = "Completa nombre, telÃ©fono y direcciÃ³n.";
+    msg.textContent = "Completa nombre, tel\u00e9fono y direcci\u00f3n.";
     msg.classList.add("err");
     return;
   }
   if (!selectedDate || !selectedTime) {
-    msg.textContent = "Elige un dÃ­a y un horario disponibles.";
+    msg.textContent = "Elige un d\u00eda y un horario disponibles.";
     msg.classList.add("err");
     return;
   }
 
   const confirmBtn = document.getElementById("confirmBtn");
   confirmBtn.disabled = true;
-  confirmBtn.textContent = "Agendandoâ¦";
+  confirmBtn.textContent = "Agendando\u2026";
 
   try {
-    // Generamos el ID en el navegador: asÃ­ no necesitamos leer de vuelta el
+    // Generamos el ID en el navegador: as\u00ed no necesitamos leer de vuelta el
     // registro del cliente (por seguridad, esa tabla solo la puede leer el admin).
     const clientId = crypto.randomUUID();
     const { error: clientErr } = await supabase.from("clients").insert({
@@ -217,10 +217,10 @@ document.getElementById("confirmBtn").addEventListener("click", async () => {
     }
 
     newClientId = clientId;
-    msg.textContent = "Â¡Cita agendada! Te contactaremos por WhatsApp para confirmar.";
+    msg.textContent = "\u00a1Cita agendada! Te contactaremos por WhatsApp para confirmar.";
     msg.classList.add("ok");
 
-    // Aviso al admin por WhatsApp â best effort, nunca bloquea ni rompe la confirmaciÃ³n al cliente.
+    // Aviso al admin por WhatsApp \u2014 best effort, nunca bloquea ni rompe la confirmaci\u00f3n al cliente.
     supabase.functions
       .invoke("notify-booking", {
         body: {
@@ -274,12 +274,12 @@ document.getElementById("copyBtn").addEventListener("click", () => {
   navigator.clipboard.writeText(url).then(() => {
     const btn = document.getElementById("copyBtn");
     const old = btn.textContent;
-    btn.textContent = "Â¡Copiado!";
+    btn.textContent = "\u00a1Copiado!";
     setTimeout(() => (btn.textContent = old), 1500);
   });
 });
 
-// ---------- ReseÃ±as ----------
+// ---------- Rese\u00f1as ----------
 async function loadReviews() {
   const { data, error } = await supabase
     .from("public_reviews")
@@ -287,18 +287,18 @@ async function loadReviews() {
   const grid = document.getElementById("reviewsGrid");
   grid.innerHTML = "";
   if (error) {
-    console.error("Error cargando reseÃ±as:", error);
+    console.error("Error cargando rese\u00f1as:", error);
     return;
   }
   if (!data || data.length === 0) {
-    grid.innerHTML = '<div class="empty-state">AÃºn no hay reseÃ±as publicadas.</div>';
+    grid.innerHTML = '<div class="empty-state">A\u00fan no hay rese\u00f1as publicadas.</div>';
     return;
   }
   data.forEach((r) => {
     const div = document.createElement("div");
     div.className = "testi";
     div.innerHTML = `
-      <div class="stars">${"â".repeat(r.rating)}${"â".repeat(5 - r.rating)}</div>
+      <div class="stars">${"\u2605".repeat(r.rating)}${"\u2606".repeat(5 - r.rating)}</div>
       <p>${escapeHtml(r.comment || "")}</p>
       <div class="testi-author">${escapeHtml(r.client_name)}</div>
     `;
@@ -308,7 +308,7 @@ async function loadReviews() {
   if (data.length > 0) {
     const avg = (data.reduce((sum, r) => sum + r.rating, 0) / data.length).toFixed(1);
     const trust = document.getElementById("trustLine");
-    trust.innerHTML = `<span class="stars">â</span> <strong>${avg}</strong> Â· ${data.length} reseÃ±a${data.length === 1 ? "" : "s"} de clientes`;
+    trust.innerHTML = `<span class="stars">\u2605</span> <strong>${avg}</strong> \u00b7 ${data.length} rese\u00f1a${data.length === 1 ? "" : "s"} de clientes`;
     trust.style.display = "flex";
   }
 }
@@ -335,7 +335,7 @@ document.getElementById("submitReviewBtn").addEventListener("click", async () =>
   const comment = document.getElementById("reviewComment").value.trim();
 
   if (!client_name || pickedRating === 0) {
-    msg.textContent = "Escribe tu nombre y elige una calificaciÃ³n.";
+    msg.textContent = "Escribe tu nombre y elige una calificaci\u00f3n.";
     msg.classList.add("err");
     return;
   }
@@ -347,11 +347,11 @@ document.getElementById("submitReviewBtn").addEventListener("click", async () =>
   });
   if (error) {
     console.error(error);
-    msg.textContent = "No se pudo enviar tu reseÃ±a. Intenta de nuevo.";
+    msg.textContent = "No se pudo enviar tu rese\u00f1a. Intenta de nuevo.";
     msg.classList.add("err");
     return;
   }
-  msg.textContent = "Â¡Gracias! Tu reseÃ±a se publicarÃ¡ luego de ser revisada.";
+  msg.textContent = "\u00a1Gracias! Tu rese\u00f1a se publicar\u00e1 luego de ser revisada.";
   msg.classList.add("ok");
   document.getElementById("reviewName").value = "";
   document.getElementById("reviewComment").value = "";
@@ -363,10 +363,10 @@ document.getElementById("submitReviewBtn").addEventListener("click", async () =>
 (async function init() {
   if (!isConfigured) {
     document.getElementById("dayGrid").innerHTML =
-      '<div class="empty-state" style="grid-column:1/-1;">La agenda todavÃ­a no estÃ¡ conectada. Vuelve a intentar en unos minutos o contÃ¡ctanos directamente.</div>';
+      '<div class="empty-state" style="grid-column:1/-1;">La agenda todav\u00eda no est\u00e1 conectada. Vuelve a intentar en unos minutos o cont\u00e1ctanos directamente.</div>';
     document.getElementById("confirmBtn").disabled = true;
     document.getElementById("reviewsGrid").innerHTML =
-      '<div class="empty-state">AÃºn no hay reseÃ±as publicadas.</div>';
+      '<div class="empty-state">A\u00fan no hay rese\u00f1as publicadas.</div>';
     document.getElementById("cardUrl").textContent = location.origin + location.pathname;
     return;
   }
