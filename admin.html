@@ -8,7 +8,7 @@
 <link rel="icon" href="img/logo-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/styles.css?v=12">
+<link rel="stylesheet" href="css/styles.css?v=14">
 </head>
 <body class="admin-body">
 
@@ -122,11 +122,17 @@
       <h2 style="margin-bottom:22px;">Configuración</h2>
       <div class="panel" style="max-width:420px;">
         <h3>Aviso de citas por WhatsApp</h3>
-        <span class="field-label">Tu número de WhatsApp (con código de país, solo dígitos)</span>
+        <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:14px;">Administrador 1</p>
+        <span class="field-label">Número de WhatsApp (con código de país, solo dígitos)</span>
         <input class="input" id="cfgPhone" placeholder="Ej: 5353578768">
         <span class="field-label">APIKEY de CallMeBot</span>
         <input class="input" id="cfgApikey" placeholder="Ej: 7165605">
-        <button class="btn btn-primary" id="saveConfigBtn" style="width:100%; justify-content:center;">Guardar</button>
+        <p style="font-size:0.85rem; color:var(--text-muted); margin:18px 0 14px; border-top:1px dashed rgba(22,34,79,0.15); padding-top:14px;">Administrador 2 (opcional)</p>
+        <span class="field-label">Número de WhatsApp</span>
+        <input class="input" id="cfgPhone2" placeholder="Ej: 5359876543">
+        <span class="field-label">APIKEY de CallMeBot</span>
+        <input class="input" id="cfgApikey2" placeholder="Su propio APIKEY">
+        <button class="btn btn-primary" id="saveConfigBtn" style="width:100%; justify-content:center; margin-top:8px;">Guardar</button>
         <div class="form-msg" id="configMsg"></div>
       </div>
       <div class="panel" style="max-width:420px;">
@@ -134,30 +140,34 @@
         <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:14px;">
           Gratis e ilimitado. Crea un bot con <strong>@BotFather</strong> en
           Telegram (envíale <code>/newbot</code> y sigue las instrucciones),
-          copia el token. Luego escríbele cualquier mensaje a tu bot nuevo y
-          entra a
+          copia el token. Luego cada administrador debe escribirle cualquier
+          mensaje a ese mismo bot y entrar a
           <code>https://api.telegram.org/bot&lt;TOKEN&gt;/getUpdates</code>
-          para encontrar tu <code>chat_id</code>.
+          para encontrar su propio <code>chat_id</code>.
         </p>
-        <span class="field-label">Token del bot</span>
+        <span class="field-label">Token del bot (uno solo, compartido)</span>
         <input class="input" id="cfgTelegramToken" placeholder="123456:ABC-...">
-        <span class="field-label">Tu Chat ID</span>
+        <span class="field-label">Chat ID — Administrador 1</span>
         <input class="input" id="cfgTelegramChatId" placeholder="Ej: 987654321">
+        <span class="field-label">Chat ID — Administrador 2 (opcional)</span>
+        <input class="input" id="cfgTelegramChatId2" placeholder="Su propio Chat ID">
         <button class="btn btn-primary" id="saveTelegramConfigBtn" style="width:100%; justify-content:center;">Guardar</button>
         <div class="form-msg" id="telegramConfigMsg"></div>
       </div>
       <div class="panel" style="max-width:420px;">
-        <h3>Aviso de citas por correo</h3>
+        <h3>Aviso por correo</h3>
         <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:14px;">
           Gratis con Resend (3,000 correos/mes). Crea una cuenta en
-          <strong>resend.com</strong> con el correo del dueño del negocio,
-          confirma tu correo, y genera una API Key desde su panel — no hace
-          falta dominio propio.
+          <strong>resend.com</strong>, confirma tu correo, y genera una API
+          Key desde su panel — no hace falta dominio propio. La misma clave
+          sirve para enviarle a los dos administradores.
         </p>
-        <span class="field-label">Correo del dueño (donde llegan los avisos)</span>
-        <input class="input" id="cfgEmail" placeholder="dueño@correo.com">
-        <span class="field-label">API Key de Resend</span>
+        <span class="field-label">API Key de Resend (compartida)</span>
         <input class="input" id="cfgResendKey" placeholder="re_xxxxxxxxxxxx">
+        <span class="field-label">Correo — Administrador 1</span>
+        <input class="input" id="cfgEmail" placeholder="admin1@correo.com">
+        <span class="field-label">Correo — Administrador 2 (opcional)</span>
+        <input class="input" id="cfgEmail2" placeholder="admin2@correo.com">
         <button class="btn btn-primary" id="saveEmailConfigBtn" style="width:100%; justify-content:center;">Guardar</button>
         <div class="form-msg" id="emailConfigMsg"></div>
       </div>
@@ -166,6 +176,6 @@
   </main>
 </div>
 
-<script type="module" src="js/admin.js?v=12"></script>
+<script type="module" src="js/admin.js?v=14"></script>
 </body>
 </html>
